@@ -1,0 +1,124 @@
+{
+  "name": "R dev (latest)",
+
+
+  // =====================================================================
+  //                           BUILD DOCKER IMAGE 
+  // =====================================================================
+  // Dockerfile defines image to build
+  "build": {"dockerfile": "Dockerfile"},
+
+  // =====================================================================
+  //                            DEFINE MOUNTS
+  // =====================================================================
+  // Connect local and virtual filesystems with mounts
+  // "mounts": ["source=/path/to/source, target=/path/to/target"],
+
+
+  // =====================================================================
+  //                              FEATURES
+  // =====================================================================
+  // Predefined devcontainer features allow easy setup of features
+  "features": {
+    // -------------------------------------------------------------------
+    //                         ROCKER FEATURES
+    // -------------------------------------------------------------------
+    // Rocker provides a set of devcontainer features for R development: 
+    // https://github.com/rocker-org/devcontainer-features/tree/main
+    
+    // R (latest version)
+    "ghcr.io/rocker-org/devcontainer-features/r-apt:latest": {
+      "installRadian": true      // installs radian console with pip
+    },
+
+    // Setup renv cache for R packages using a docker volume
+    "ghcr.io/rocker-org/devcontainer-features/renv-cache:latest": {},
+
+    // R packages with pak::pak()
+    // In the current setup, I install some 'development-related' packages here, and 'project-related' packages from the dockerfile
+    // "ghcr.io/rocker-org/devcontainer-features/r-packages:latest": {
+    //   "packages": "rlang, languageserver, remotes, cli, httpgd, rmarkdown",
+    //   "installSystemRequirements": true
+    // },
+
+    // Install linux packages with apt
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:latest": {
+      "packages": "git, curl, wget, sudo"
+    },
+
+    // Install pandoc
+    "ghcr.io/rocker-org/devcontainer-features/pandoc:latest": {},
+
+    // Install quarto
+    "ghcr.io/rocker-org/devcontainer-features/quarto-cli:latest": {},
+
+
+    // -------------------------------------------------------------------
+    //                          CLI FEATURES
+    // -------------------------------------------------------------------
+    // Command line utilities
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true, 
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    },
+    // ZSH plugins (downloaded here for simplicity; .zshrc is pulled from my .dotfiles repo in postCreateCommand)
+    "ghcr.io/devcontainers-contrib/features/zsh-plugins:latest": {
+      "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions.git https://github.com/zsh-users/zsh-syntax-highlighting.git"
+    },
+    // Preserve shell history (incl. for zsh)
+    "ghcr.io/stuartleeks/dev-container-features/shell-history:latest": {}
+  
+  },
+
+
+  // =====================================================================
+  //                       CUSTOMIZE DEV CONTAINER
+  // =====================================================================
+  "customizations": {
+    "vscode": {
+
+      "settings": {
+        "r.rterm.linux": "/usr/local/bin/radian",
+        "r.bracketedPaste": true, 
+        "r.plot.useHttpgd": true, 
+        "r.sessionWatcher": true, 
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        }
+      },
+
+      "extentions": [
+        "REditorSupport.r", 
+        "quarto.quarto", 
+        "ms-azuretools.vscode-docker",
+        "christian-kohler.path-intellisense", 
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-australian-english", 
+        "streetsidesoftware.code-spell-checker-scientific-terms",
+        "mechatroner.rainbow-csv", 
+        "AntiAntiSepticeye.vscode-color-picker", 
+        "zhuangtongfa.material-theme"
+      ]
+      
+    }
+  },
+
+  // =====================================================================
+  //              SCRIPTS TO RUN AFTER CONTAINER IS CREATED
+  // =====================================================================
+  // Install p10k oh-my-zsh theme
+  // Download config files from my .dotfiles repo
+  "postCreateCommand": "git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k && wget https://raw.githubusercontent.com/bfordAIMS/.dotfiles/main/.zshrc -O $HOME/.zshrc && wget https://raw.githubusercontent.com/bfordAIMS/.dotfiles/main/.p10k.zsh -O $HOME/.p10k.zsh"
+  
+  
+
+}
